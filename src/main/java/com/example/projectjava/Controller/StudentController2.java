@@ -1,11 +1,16 @@
 package com.example.projectjava.Controller;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.example.projectjava.DTO.StudentRequest;
 import com.example.projectjava.Model.Student;
 import com.example.projectjava.Repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,7 +27,27 @@ public class StudentController2 {
     }
 
     @GetMapping
-    public List<Student> findAll() {
+    public Page<Student> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "ASC") Sort.Direction direction
+    ) {
+        Sort sort = Sort.by(direction, "id")
+                .and(Sort.by(direction, "name"));
+
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+
+//        if (StringUtils.hasText(name)) {
+//            return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable);
+//        }
+
+//        return studentRepository.findAll(pageable);
+        return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable);
+    }
+
+    @GetMapping("/list")
+    public List<Student> list() {
         return studentRepository.findAll();
     }
 
