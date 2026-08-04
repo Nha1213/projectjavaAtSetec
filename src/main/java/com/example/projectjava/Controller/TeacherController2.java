@@ -4,6 +4,9 @@ import com.example.projectjava.DTO.TeacherRequest;
 import com.example.projectjava.Model.Teacher;
 import com.example.projectjava.Repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,21 @@ public class TeacherController2 {
     }
 
     @GetMapping
+    public Page<Teacher> getTeachers(
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "false") String name,
+        @RequestParam(defaultValue = "ASC") Sort.Direction direction
+    ) {
+
+        Sort sort =  Sort.by(direction, "id").and(Sort.by(direction, "name"));
+
+        PageRequest pageable = PageRequest.of(page, size, sort);
+
+        return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable);
+    }
+
+    @GetMapping("/list")
     public List<Teacher> getTeachers() {
         return teacherRepository.findAll();
     }
