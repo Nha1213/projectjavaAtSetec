@@ -1,5 +1,7 @@
 package com.example.projectjava.DTO;
 
+import com.example.projectjava.Model.Teacher;
+
 public class TeacherRequest {
     private String name;
     private String gender;
@@ -36,5 +38,9 @@ public class TeacherRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Teacher toEntity() {
+        return  new Teacher(name, gender, age, classTeach);
     }
 }

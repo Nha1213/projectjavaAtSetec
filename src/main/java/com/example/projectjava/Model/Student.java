@@ -18,13 +18,6 @@ public class Student {
     private int age;
 
 
-    public Student(int age, String gender, Long id, String name) {
-        this.age = age;
-        this.gender = gender;
-        this.id = id;
-        this.name = name;
-    }
-
     public Student() {}
 
     public Student(String name, String gender, int age) {
@@ -32,6 +25,14 @@ public class Student {
         this.gender = gender;
         this.age = age;
     }
+
+    public Student(int age, String gender, Long id, String name) {
+        this.age = age;
+        this.gender = gender;
+        this.id = id;
+        this.name = name;
+    }
+
 
     public int getAge() {
         return age;

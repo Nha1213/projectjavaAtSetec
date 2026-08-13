@@ -1,5 +1,6 @@
 package com.example.projectjava.Model;
 
+import com.example.projectjava.DTO.TeacherResponse;
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +23,17 @@ public class Teacher {
     }
 
     public Teacher() {}
+
+    public Teacher(String name, String gender, Long age, String classTeach) {
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+        this.classTeach = classTeach;
+    }
+
+    public TeacherResponse toResponse(){
+        return new TeacherResponse(id, name, gender, age, classTeach);
+    }
 
     public Long getAge() {
         return age;
