@@ -1,7 +1,11 @@
 package com.example.projectjava.Model;
 
 
+import com.example.projectjava.DTO.StudentResponse;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "student")
@@ -22,6 +26,12 @@ public class Student {
     }
 
     public Student() {}
+
+    public Student(String name, String gender, int age) {
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+    }
 
     public int getAge() {
         return age;
@@ -53,5 +63,13 @@ public class Student {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Student toEntity(){
+        return new Student(age, gender, id, name);
+    }
+
+    public StudentResponse toResponse(){
+        return new StudentResponse(id, name, gender, age);
     }
 }

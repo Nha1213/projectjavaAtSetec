@@ -1,5 +1,6 @@
 package com.example.projectjava.Controller;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.example.projectjava.DTO.TeacherRequest;
 import com.example.projectjava.Model.Teacher;
 import com.example.projectjava.Repository.TeacherRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,13 +30,17 @@ public class TeacherController2 {
     public Page<Teacher> getTeachers(
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "false") String name,
+        @RequestParam(required = false) String name,
         @RequestParam(defaultValue = "ASC") Sort.Direction direction
     ) {
 
         Sort sort =  Sort.by(direction, "id").and(Sort.by(direction, "name"));
 
         PageRequest pageable = PageRequest.of(page, size, sort);
+
+        if(StringUtils.hasText(name)) {
+            return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable);
+        }
 
         return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable);
     }

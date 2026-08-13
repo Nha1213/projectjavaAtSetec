@@ -1,11 +1,19 @@
 package com.example.projectjava.DTO;
 
-import com.example.projectjava.Model.Student;
-
-public class StudentRequest {
+public class StudentResponse {
+    private Long id;
     private String name;
     private String gender;
     private int age;
+
+    public StudentResponse(Long id, String name, String gender, int age) {
+        this.id = id;
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+    }
+
+    public StudentResponse() {}
 
     public int getAge() {
         return age;
@@ -23,6 +31,14 @@ public class StudentRequest {
         this.gender = gender;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -30,9 +46,4 @@ public class StudentRequest {
     public void setName(String name) {
         this.name = name;
     }
-
-    public Student toEntity(){
-        return new Student(name,gender,age);
-    }
-
 }

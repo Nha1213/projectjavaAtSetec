@@ -2,6 +2,7 @@ package com.example.projectjava.Controller;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.example.projectjava.DTO.StudentRequest;
+import com.example.projectjava.DTO.StudentResponse;
 import com.example.projectjava.Model.Student;
 import com.example.projectjava.Repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class StudentController2 {
     }
 
     @GetMapping
-    public Page<Student> findAll(
+    public Page<StudentResponse> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
@@ -38,12 +39,12 @@ public class StudentController2 {
 
         PageRequest pageable = PageRequest.of(page - 1, size, sort);
 
-//        if (StringUtils.hasText(name)) {
-//            return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable);
-//        }
+        if (StringUtils.hasText(name)) {
+            return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable).map(Student::toResponse);
+        }
 
 //        return studentRepository.findAll(pageable);
-        return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable);
+        return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable).map(Student -> Student.toResponse());
     }
 
     @GetMapping("/list")
@@ -63,6 +64,11 @@ public class StudentController2 {
         studentAdd.setAge(student.getAge());
         studentAdd.setGender(student.getGender());
         return studentRepository.save(studentAdd);
+    }
+
+    @PostMapping("/post-v2")
+    public Student input (@RequestBody StudentRequest request){
+        return studentRepository.save(request.toEntity());
     }
 
     @PutMapping("/{id}")
