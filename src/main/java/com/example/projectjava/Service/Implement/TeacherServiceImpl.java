@@ -18,16 +18,21 @@ import java.util.List;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
-    private TeacherRepository teacherRepository;
+    private final TeacherRepository teacherRepository;
+
+    public TeacherServiceImpl(TeacherRepository teacherRepository) {
+        this.teacherRepository = teacherRepository;
+    }
 
     @Override
     public List<TeacherResponse> list() {
-        return teacherRepository.findAll().stream().map(Teacher::toResponse).toList();
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        return teacherRepository.findAll(sort).stream().map(Teacher::toResponse).toList();
     }
 
     @Override
     public TeacherResponse listOne(int id) {
-        Teacher teacher = teacherRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
+        Teacher teacher = teacherRepository.findById((long) id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
         return teacher.toResponse();
     }
 
@@ -51,7 +56,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherResponse update(TeacherRequest teacherRequest, Long id) {
-        Teacher teacher = teacherRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
+        Teacher teacher = teacherRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
         teacher.setName(teacherRequest.getName());
         teacher.setGender(teacherRequest.getGender());
         teacher.setAge(teacherRequest.getAge());
@@ -61,7 +66,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void delete(Long id) {
-        Teacher teacher = teacherRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
+        Teacher teacher = teacherRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
         teacherRepository.delete(teacher);
     }
 }

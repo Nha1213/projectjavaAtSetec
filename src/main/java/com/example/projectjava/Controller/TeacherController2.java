@@ -62,7 +62,7 @@ public class TeacherController2 {
 
     @PutMapping("/{id}")
     public Teacher updateTeacher(@PathVariable int id, @RequestBody TeacherRequest req) {
-        Teacher isTeacher = teacherRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher Not Found!"));
+        Teacher isTeacher = teacherRepository.findById((long) id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher Not Found!"));
         isTeacher.setName(req.getName());
         isTeacher.setGender(req.getGender());
         isTeacher.setAge(req.getAge());
@@ -72,7 +72,7 @@ public class TeacherController2 {
 
     @DeleteMapping("/{id}")
     public void deleteTeacher(@PathVariable int id) {
-        Teacher isTeacher = teacherRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher Not Found!"));
+        Teacher isTeacher = teacherRepository.findById((long) id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher Not Found!"));
         teacherRepository.delete(isTeacher);
     }
 }

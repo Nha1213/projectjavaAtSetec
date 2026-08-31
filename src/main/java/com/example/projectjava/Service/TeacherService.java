@@ -4,9 +4,11 @@ import com.example.projectjava.DTO.TeacherRequest;
 import com.example.projectjava.DTO.TeacherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface TeacherService {
     List<TeacherResponse> list();
 

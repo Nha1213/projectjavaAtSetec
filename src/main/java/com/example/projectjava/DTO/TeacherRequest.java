@@ -1,6 +1,11 @@
 package com.example.projectjava.DTO;
 
 import com.example.projectjava.Model.Teacher;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 
 public class TeacherRequest {
     private String name;

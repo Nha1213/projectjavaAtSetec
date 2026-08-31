@@ -1,35 +1,15 @@
 package com.example.projectjava.DTO;
 
 import com.example.projectjava.Model.Student;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class StudentRequest {
     private String name;
     private String gender;
     private int age;
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Student toEntity(){
         return new Student(name,gender,age);
