@@ -4,6 +4,12 @@ import com.example.projectjava.DTO.StudentRequest;
 import com.example.projectjava.DTO.StudentResponse;
 import com.example.projectjava.Model.Student;
 import com.example.projectjava.Service.StudentService;
+import com.example.projectjava.common.response.PaginationResponse;
+import com.example.projectjava.common.response.SuccessResponse;
+import com.example.projectjava.util.ApiResponseUtil;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.server.servlet.context.ServletComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -14,48 +20,55 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/student/v-3")
+@RequiredArgsConstructor
 public class StudentController3 {
     private final StudentService studentService;
 
 
-    public StudentController3(StudentService studentService) {
-        this.studentService = studentService;
-    }
+//    public StudentController3(StudentService studentService) {
+//        this.studentService = studentService;
+//    }
 
     @GetMapping("/list")
-    public ResponseEntity<List<StudentResponse>> list() {
-        return ResponseEntity.ok(studentService.list());
+    public ResponseEntity<SuccessResponse<List<StudentResponse>>> list() {
+
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, studentService.list()));
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<StudentResponse> findOne(@PathVariable int id) {
-        return ResponseEntity.ok(studentService.listOne(id));
+    public ResponseEntity<SuccessResponse<StudentResponse>> findOne(@PathVariable int id) {
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, studentService.listOne(id)));
     }
 
     @GetMapping
-    public Page<StudentResponse> findAll(
-            @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<PaginationResponse<List<StudentResponse>>> findAll(
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "DESC") Sort.Direction direction
     ){
-        return studentService.filter(page, size, name, direction);
+        return ResponseEntity.ok(
+                ApiResponseUtil.pagination(HttpStatus.OK, studentService.filter(page, size, name, direction))
+        );
     }
 
     @PostMapping
-    public ResponseEntity<StudentResponse> save(@RequestBody StudentRequest studentRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(studentRequest));
+    public ResponseEntity<SuccessResponse<StudentResponse>> save(@Valid @RequestBody StudentRequest Request) {
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.CREATED, studentService.create(Request)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StudentResponse> update(@RequestBody StudentRequest studentRequest, @PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.update(studentRequest, id));
+    public ResponseEntity<SuccessResponse<StudentResponse>> update(@Valid @RequestBody StudentRequest studentRequest, @PathVariable long id) {
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, studentService.update(studentRequest, id)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<SuccessResponse<Void>> delete(@PathVariable long id) {
         studentService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                ApiResponseUtil.success(HttpStatus.NO_CONTENT)
+        );
     }
 
 }

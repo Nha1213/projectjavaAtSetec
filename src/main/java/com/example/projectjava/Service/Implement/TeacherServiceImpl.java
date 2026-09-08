@@ -5,6 +5,8 @@ import com.example.projectjava.DTO.TeacherResponse;
 import com.example.projectjava.Model.Teacher;
 import com.example.projectjava.Repository.TeacherRepository;
 import com.example.projectjava.Service.TeacherService;
+import com.example.projectjava.exception.CustomException;
+import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +16,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.criteria.Predicate;
+
 @Service
+@AllArgsConstructor
 public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepository teacherRepository;
 
-    public TeacherServiceImpl(TeacherRepository teacherRepository) {
-        this.teacherRepository = teacherRepository;
-    }
+//    public TeacherServiceImpl(TeacherRepository teacherRepository) {
+//        this.teacherRepository = teacherRepository;
+//    }
 
     @Override
     public List<TeacherResponse> list() {
@@ -32,7 +38,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherResponse listOne(int id) {
-        Teacher teacher = teacherRepository.findById((long) id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
+        Teacher teacher = teacherRepository.findById((long) id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Teacher not found"));
         return teacher.toResponse();
     }
 
@@ -42,11 +48,18 @@ public class TeacherServiceImpl implements TeacherService {
 
         PageRequest pageable = PageRequest.of(page - 1, size, sort);
 
-        if(StringUtils.hasText(name)){
-            return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable).map(Teacher::toResponse);
-        }
-
-        return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable).map(Teacher::toResponse);
+        return teacherRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (StringUtils.hasText(name)) {
+                predicates.add(cb.like(cb.lower(root.get("name")), "%" + name.trim().toLowerCase() + "%"));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }, pageable).map(Teacher::toResponse);
+//        if(StringUtils.hasText(name)){
+//            return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable).map(Teacher::toResponse);
+//        }
+//
+//        return teacherRepository.searchTeacherByNameContainingIgnoreCase(name, pageable).map(Teacher::toResponse);
     }
 
     @Override
@@ -56,7 +69,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherResponse update(TeacherRequest teacherRequest, Long id) {
-        Teacher teacher = teacherRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
+        Teacher teacher = teacherRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Teacher not found"));
         teacher.setName(teacherRequest.getName());
         teacher.setGender(teacherRequest.getGender());
         teacher.setAge(teacherRequest.getAge());
@@ -66,7 +79,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void delete(Long id) {
-        Teacher teacher = teacherRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
+        Teacher teacher = teacherRepository.findById((long) Math.toIntExact(id)).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Teacher not found"));
         teacherRepository.delete(teacher);
     }
 }

@@ -5,6 +5,8 @@ import com.example.projectjava.DTO.StudentResponse;
 import com.example.projectjava.Model.Student;
 import com.example.projectjava.Repository.StudentRepository;
 import com.example.projectjava.Service.StudentService;
+import com.example.projectjava.exception.CustomException;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,16 +15,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.criteria.Predicate;
+import lombok.*;
+
 
 @Service
+//@RequiredArgsConstructor
+@AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
     private StudentRepository studentRepository;
 
 
-    public  StudentServiceImpl(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
+//    public StudentServiceImpl(StudentRepository studentRepository) {
+//        this.studentRepository = studentRepository;
+//    }
 
     @Override
     public List<StudentResponse> list() {
@@ -37,7 +45,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse update(StudentRequest studentRequest, long id) {
-        Student stuUp = studentRepository.findById((int) id).orElseThrow(()  -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+        Student stuUp = studentRepository.findById((int) id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Student not found"));
         stuUp.setName(studentRequest.getName());
         stuUp.setAge(studentRequest.getAge());
         stuUp.setGender(studentRequest.getGender());
@@ -48,7 +56,7 @@ public class StudentServiceImpl implements StudentService {
     public void delete(long id) {
         Student stu = studentRepository.findById((int) id)
                 .orElseThrow(() ->
-                        new ResponseStatusException(
+                        new CustomException(
                                 HttpStatus.NOT_FOUND,
                                 "Student not found"
                         )
@@ -59,21 +67,41 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse listOne(long id) {
-        return studentRepository.findById((int) id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Student Not Found!")).toResponse();
+        return studentRepository.findById((int) id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Student Not Found!")).toResponse();
     }
 
     @Override
-    public Page<StudentResponse> filter(int page, int size, String name, Sort.Direction direction) {
+    public Page<StudentResponse> filter(
+            int page,
+            int size,
+            String name,
+            Sort.Direction direction
+    ) {
         Sort sort = Sort.by(direction, "id")
                 .and(Sort.by(direction, "name"));
 
-        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+        PageRequest pageable = PageRequest.of(
+                page - 1,
+                size,
+                sort
+        );
 
-        if (StringUtils.hasText(name)) {
-            return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable).map(Student::toResponse);
-        }
+        return studentRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-//        return studentRepository.findAll(pageable);
-        return studentRepository.searchStudentByNameContainingIgnoreCase(name, pageable).map(Student::toResponse);
+            if (StringUtils.hasText(name)) {
+                String keyword = "%" + name.trim().toLowerCase() + "%";
+
+                predicates.add(
+                        cb.like(
+                                cb.lower(root.get("name")),
+                                keyword
+                        )
+                );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+
+        }, pageable).map(Student::toResponse);
     }
 }

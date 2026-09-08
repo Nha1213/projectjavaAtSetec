@@ -5,6 +5,7 @@ import com.example.projectjava.DTO.TeacherResponse;
 import com.example.projectjava.Model.Teacher;
 import com.example.projectjava.Repository.TeacherRepository;
 import com.example.projectjava.Service.TeacherService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -15,12 +16,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/teacher/v-3")
+@RequiredArgsConstructor
 public class TeacherController3 {
 
     private final TeacherService teacherService;
-    public TeacherController3(TeacherService teacherService) {
-        this.teacherService = teacherService;
-    }
+//    public TeacherController3(TeacherService teacherService) {
+//        this.teacherService = teacherService;
+//    }
 
 
     @GetMapping("/list")
