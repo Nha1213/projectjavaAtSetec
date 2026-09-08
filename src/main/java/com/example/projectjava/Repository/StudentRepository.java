@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StudentRepository extends JpaRepository<Student, Integer>, JpaSpecificationExecutor<Student> {
+public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpecificationExecutor<Student> {
 
 //    @Query(value = "Select t from Student t where :name is null or :name = '' or lower(t.name) like lower(concat('%', :name, '%'))", nativeQuery = true)
     @Query(value = "Select t from Student t where :name is null or :name = '' or lower(t.name) like lower(concat('%', :name, '%'))")

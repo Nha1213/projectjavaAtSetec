@@ -2,23 +2,23 @@ package com.example.projectjava.Service.Implement;
 
 import com.example.projectjava.DTO.StudentRequest;
 import com.example.projectjava.DTO.StudentResponse;
+import com.example.projectjava.Model.Card;
 import com.example.projectjava.Model.Student;
 import com.example.projectjava.Repository.StudentRepository;
 import com.example.projectjava.Service.StudentService;
 import com.example.projectjava.exception.CustomException;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.criteria.Predicate;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.criteria.Predicate;
-import lombok.*;
+import java.util.UUID;
 
 
 @Service
@@ -40,21 +40,44 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse create(StudentRequest request) {
-        return studentRepository.save(request.toEntity()).toResponse();
+        if (request.getCardRequest() == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Card is required");
+        }
+
+        String code = UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 12);
+
+        Student student = request.toEntity(code);
+        return studentRepository.save(student).toResponse();
     }
 
     @Override
     public StudentResponse update(StudentRequest studentRequest, long id) {
-        Student stuUp = studentRepository.findById((int) id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Student not found"));
+        Student stuUp = studentRepository.findById(id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Student not found"));
         stuUp.setName(studentRequest.getName());
         stuUp.setAge(studentRequest.getAge());
         stuUp.setGender(studentRequest.getGender());
+        stuUp.getCard().setIssueDate(studentRequest.getCardRequest().getIssueDate());
+        stuUp.getCard().setExpiryDate(studentRequest.getCardRequest().getExpiryDate());
+//        if (studentRequest.getCardRequest() != null) {
+//            String code = stuUp.getCard() != null ? stuUp.getCard().getCode() : UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+//            Card card = new Card(
+//                    studentRequest.getCardRequest().getIssueDate(),
+//                    studentRequest.getCardRequest().getExpiryDate(),
+//                    code
+//            );
+//            stuUp.setCard(card);
+//            card.setStudent(stuUp);
+//        }
+
         return studentRepository.save(stuUp).toResponse();
     }
 
     @Override
     public void delete(long id) {
-        Student stu = studentRepository.findById((int) id)
+        Student stu = studentRepository.findById(id)
                 .orElseThrow(() ->
                         new CustomException(
                                 HttpStatus.NOT_FOUND,
@@ -67,7 +90,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse listOne(long id) {
-        return studentRepository.findById((int) id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Student Not Found!")).toResponse();
+        return studentRepository.findById(id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Student Not Found!")).toResponse();
     }
 
     @Override

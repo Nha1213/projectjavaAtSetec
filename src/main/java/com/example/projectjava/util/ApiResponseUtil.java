@@ -1,12 +1,11 @@
 package com.example.projectjava.util;
 
-import com.example.projectjava.common.response.ErrorResponse;
-import com.example.projectjava.common.response.PaginationResponse;
-import com.example.projectjava.common.response.SuccessResponse;
+import com.example.projectjava.response.ErrorResponse;
+import com.example.projectjava.response.PaginationResponse;
+import com.example.projectjava.response.SuccessResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

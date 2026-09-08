@@ -2,15 +2,12 @@ package com.example.projectjava.Controller;
 
 import com.example.projectjava.DTO.StudentRequest;
 import com.example.projectjava.DTO.StudentResponse;
-import com.example.projectjava.Model.Student;
 import com.example.projectjava.Service.StudentService;
-import com.example.projectjava.common.response.PaginationResponse;
-import com.example.projectjava.common.response.SuccessResponse;
+import com.example.projectjava.response.PaginationResponse;
+import com.example.projectjava.response.SuccessResponse;
 import com.example.projectjava.util.ApiResponseUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.server.servlet.context.ServletComponentScan;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

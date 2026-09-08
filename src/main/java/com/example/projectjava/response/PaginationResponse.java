@@ -1,4 +1,4 @@
-package com.example.projectjava.common.response;
+package com.example.projectjava.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,6 +4,9 @@ package com.example.projectjava.Model;
 import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import com.example.projectjava.DTO.StudentResponse;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -20,26 +23,22 @@ public class Student {
     private String gender;
     private int age;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "card_id", referencedColumnName = "id")
+    //owner side of the relationship
+    private Card card;
 
-    public Student(String name, String gender, int age) {
+    public Student( String name, String gender, Integer age, Card card) {
         this.name = name;
         this.gender = gender;
         this.age = age;
-    }
-
-    public Student(int age, String gender, Long id, String name) {
-        this.age = age;
-        this.gender = gender;
-        this.id = id;
-        this.name = name;
-    }
-
-
-    public Student toEntity(){
-        return new Student(age, gender, id, name);
+        this.card = card;
     }
 
     public StudentResponse toResponse(){
-        return new StudentResponse(id, name, gender, age);
+        if (card == null) {
+            return new StudentResponse(id, name, gender, age, null);
+        }
+        return new StudentResponse(id, name, gender, age, card.toResponse());
     }
 }

@@ -1,6 +1,6 @@
 package com.example.projectjava.exception;
 
-import com.example.projectjava.common.response.ErrorResponse;
+import com.example.projectjava.response.ErrorResponse;
 import com.example.projectjava.util.ApiResponseUtil;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

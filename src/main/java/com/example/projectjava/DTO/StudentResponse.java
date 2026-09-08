@@ -10,14 +10,13 @@ public class StudentResponse {
     private String name;
     private String gender;
     private int age;
+    private CardResponse card;
 
-    public StudentResponse(Long id, String name, String gender, int age) {
+    public StudentResponse(Long id, String name, String gender, int age,  CardResponse card) {
         this.id = id;
         this.name = name;
         this.gender = gender;
         this.age = age;
+        this.card = card;
     }
-
-    public StudentResponse() {}
-
 }

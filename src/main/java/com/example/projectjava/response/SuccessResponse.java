@@ -1,4 +1,4 @@
-package com.example.projectjava.common.response;
+package com.example.projectjava.response;
 
 import com.example.projectjava.DTO.StudentResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;

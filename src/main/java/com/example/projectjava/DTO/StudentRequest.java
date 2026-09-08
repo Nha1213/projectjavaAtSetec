@@ -1,6 +1,8 @@
 package com.example.projectjava.DTO;
 
+import com.example.projectjava.Model.Card;
 import com.example.projectjava.Model.Student;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,11 +23,14 @@ public class StudentRequest {
     @Min(value = 1, message = "Age must be greater than 0")
     private Integer age;
 
-    public Student toEntity() {
-        return new Student(
-                name,
-                gender,
-                age
-        );
+    @Valid
+    @NotNull(message = "Card is required")
+    private CardRequest cardRequest;
+
+    public Student toEntity(String code) {
+        Card card = new Card(cardRequest.getIssueDate(), cardRequest.getExpiryDate(), code);
+        Student student = new Student(name, gender, age, card);
+        card.setStudent(student);
+        return student;
     }
 }
